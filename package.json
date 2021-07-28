@@ -1,0 +1,57 @@
+{
+  "name": "createFormController",
+  "version": "0.1.0",
+  "description": "Awesome node modules.",
+  "keywords": [
+    "nodes",
+    "cli",
+    "ysl"
+  ],
+  "homepage": "https://github.com/YSLg#readme",
+  "bugs": {
+    "url": "https://github.com/YSLg/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YSLg.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "createFormController",
+    "email": "",
+    "url": "https://github.com/YSLg"
+  },
+  "main": "lib/main.js",
+  "bin": "bin/cli.js",
+  "files": [
+    "bin",
+    "lib"
+  ],
+  "scripts": {
+    "test": "standard --fix && jest --coverage",
+    "start": "tsc --watch"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "renovate": {
+    "extends": [
+      "ysl"
+    ]
+  },
+  "dependencies": {
+    "async-validator": "^3.5.2",
+    "cac": "^6.6.1",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.15",
+    "jest": "^26.4.2",
+    "standard": "^14.3.4"
+  },
+  "engines": {
+    "node": ">=10"
+  }
+}
