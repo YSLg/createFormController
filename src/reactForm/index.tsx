@@ -39,7 +39,7 @@ const Field = (props: {
       },
     });
   };
-  // 订阅错误
+  // 订阅错误 可以不去订阅错误
   const subscriptionErrorTip = () => {
     form.subscribe(() => {
       setErrorMassage(

@@ -4,19 +4,14 @@
  * @Author: 杨海波
  * @Date: 2021-07-21 23:18:58
  * @LastEditors: 杨海波
- * @LastEditTime: 2021-07-27 14:57:20
- * @FilePath: /createFormController/src/formStore/store.ts
+ * @LastEditTime: 2021-07-29 14:46:35
+ * @FilePath: /create-form-controller/src/formStore/store.ts
  */
 import Schema from 'async-validator';
 import { set_action, add_action, upDateMessage_action } from './action';
 import reducer from './reducer';
 
-interface FormInterface {
-  dispatch: (action: any) => any;
-  setInitialValues: (payload: any) => any;
-}
-
-class Store implements FormInterface {
+class Store {
   constructor(preLoadState: {}) {
     this._currentState = preLoadState;
     this._reducer = reducer;
@@ -30,71 +25,39 @@ class Store implements FormInterface {
   private passThrough = false;
   private subscribeList: Array<any> = [];
 
-  public dispatch(action: any) {
-    switch (action.type) {
-      // 初始化store
-      case 'add':
-        this._collectionRules(action);
-        this._currentState = this._reducer(
-          this._currentState,
-          add_action(action)
-        );
-        break;
-      // 更新store,value
-      case 'set':
-        this._currentState = this._reducer(
-          this._currentState,
-          set_action(action)
-        );
-        for (let i = 0; i < this.collectionRulesStoreList.length; i++) {
-          const name = Object.keys(this.collectionRulesStoreList[i])[0];
-          if (Object.keys(action)[1] === name) {
-            this.collectionRulesStoreList[i][name]();
-          }
-        }
-        this._validateAll();
-        break;
-      // 更新error message
-      case 'upDateMessage':
-        this._currentState = this._reducer(
-          this._currentState,
-          upDateMessage_action(action)
-        );
-        break;
-    }
-  }
-
-  public setInitialValues(payload: any) {
+  public setInitialValues = (payload: any) => {
     this.dispatch({ type: 'set', ...payload });
-  }
+  };
 
-  get getState() {
+  public getState = () => {
     const currentValue: any = {};
     Object.keys(this._currentState).forEach((item) => {
       currentValue[item] = this._currentState[item].value;
     });
     return currentValue;
-  }
+  };
+  public getCurrentState = () => {
+    return this._currentState;
+  };
 
-  public getValue(name: any) {
+  public getValue = (name: any) => {
     const _current: any = {};
     Object.keys(this._currentState).forEach((item) => {
       _current[item] = this._currentState[item].value;
     });
     return _current[name];
-  }
-
+  };
   // 收集所有field正则回调
-  private _collectionRules({ type, ...payload }: any) {
+  public _collectionRules = ({ type, ...payload }: any) => {
     this.collectionRulesStoreList.push({
       [Object.keys(payload)[0]]: (val: any) => {
         this._validateOne(Object.keys(payload)[0]);
       },
     });
-  }
+  };
 
-  // 验证全部
-  private _validateAll() {
+  // 修改其中一个
+  public _validateAll = () => {
     const current = this._currentState;
     const descriptor: any = {};
     const currentValue: any = {};
@@ -107,18 +70,17 @@ class Store implements FormInterface {
       .validate(currentValue)
       .then((res) => {
         this.passThrough = false;
-        this._finishFailedwatch();
-        console.log('全部验证成功');
+        this._finishFailedwatch && this._finishFailedwatch();
+        console.log('全部验证成功', this);
       })
       .catch(({ errors, fields }) => {
         this.passThrough = true;
-        this._finishFailedwatch();
+        this._finishFailedwatch && this._finishFailedwatch();
         console.log('有验证失败的');
       });
-  }
-
+  };
   // 修改其中一个
-  private _validateOne(field: string) {
+  public _validateOne = (field: string) => {
     const current = this._currentState[field];
     const descriptor: any = {};
     const currentValue: any = {};
@@ -156,7 +118,7 @@ class Store implements FormInterface {
           }
         }
       });
-  }
+  };
   public subscribe = (cb: () => any, field: string) => {
     this.subscribeList.push({
       [field]: cb,
@@ -165,6 +127,39 @@ class Store implements FormInterface {
   public onFinishFailed = (cb: () => any) => {
     if (this._finishFailedwatch) return;
     this._finishFailedwatch = cb;
+  };
+  public dispatch = (action: any) => {
+    switch (action.type) {
+      // 初始化store
+      case 'add':
+        this._collectionRules(action);
+        this._currentState = this._reducer(
+          this._currentState,
+          add_action(action)
+        );
+        break;
+      // 更新store,value
+      case 'set':
+        this._currentState = this._reducer(
+          this._currentState,
+          set_action(action)
+        );
+        for (let i = 0; i < this.collectionRulesStoreList.length; i++) {
+          const name = Object.keys(this.collectionRulesStoreList[i])[0];
+          if (Object.keys(action)[1] === name) {
+            this.collectionRulesStoreList[i][name]();
+          }
+        }
+        this._validateAll();
+        break;
+      // 更新error message
+      case 'upDateMessage':
+        this._currentState = this._reducer(
+          this._currentState,
+          upDateMessage_action(action)
+        );
+        break;
+    }
   };
 }
 export default Store;
