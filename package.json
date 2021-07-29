@@ -1,6 +1,6 @@
 {
-  "name": "createFormController",
-  "version": "0.1.0",
+  "name": "create-form-controller",
+  "version": "1.0.2",
   "description": "Awesome node modules.",
   "keywords": [
     "nodes",
@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "author": {
-    "name": "createFormController",
+    "name": "create-form-controller",
     "email": "",
     "url": "https://github.com/YSLg"
   },
