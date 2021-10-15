@@ -4,7 +4,7 @@
  * @Author: 杨海波
  * @Date: 2021-07-21 23:18:58
  * @LastEditors: 杨海波
- * @LastEditTime: 2021-07-29 14:46:35
+ * @LastEditTime: 2021-08-06 10:44:28
  * @FilePath: /create-form-controller/src/formStore/store.ts
  */
 import Schema from 'async-validator';
@@ -71,7 +71,7 @@ class Store {
       .then((res) => {
         this.passThrough = false;
         this._finishFailedwatch && this._finishFailedwatch();
-        console.log('全部验证成功', this);
+        console.log('全部验证成功');
       })
       .catch(({ errors, fields }) => {
         this.passThrough = true;
@@ -150,7 +150,7 @@ class Store {
             this.collectionRulesStoreList[i][name]();
           }
         }
-        this._validateAll();
+        this.debounce(this._validateAll, 200)();
         break;
       // 更新error message
       case 'upDateMessage':
@@ -160,6 +160,17 @@ class Store {
         );
         break;
     }
+  };
+  public debounce = (fn: { (): void; (): void }, delay: number | undefined) => {
+    let timer: NodeJS.Timeout | null = null;
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = setTimeout(fn, delay);
+      } else {
+        timer = setTimeout(fn, delay);
+      }
+    };
   };
 }
 export default Store;

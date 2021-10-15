@@ -4,10 +4,10 @@
  * @Author: 杨海波
  * @Date: 2021-07-27 16:15:52
  * @LastEditors: 杨海波
- * @LastEditTime: 2021-07-27 16:22:08
- * @FilePath: /createFormController/src/reactForm/index.tsx
+ * @LastEditTime: 2021-08-01 16:25:11
+ * @FilePath: /create-form-controller/src/reactForm/index.tsx
  */
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, memo } from 'react';
 const CloneDemo = (
   conponent: React.DetailedReactHTMLElement<any, HTMLElement>,
   props: any
@@ -17,77 +17,79 @@ const CloneDemo = (
 const baseConponents = {
   input: <input />,
 };
-const Field = (props: {
-  value?: any;
-  field?: any;
-  validate?: any;
-  type?: any;
-  form?: any;
-  conponents?: any;
-}) => {
-  const { form, conponents } = props;
-  const [value, setValue] = useState(props.value);
-  const [errorMassage, setErrorMassage] = useState('');
+const Field = memo(
+  (props: {
+    value?: any;
+    field?: any;
+    validate?: any;
+    type?: any;
+    form?: any;
+    conponents?: any;
+  }) => {
+    const { form, conponents } = props;
+    const [value, setValue] = useState(props.value);
+    const [errorMassage, setErrorMassage] = useState('');
 
-  // 初始化
-  const initData = () => {
-    form.dispatch({
-      type: 'add',
-      [props.field]: {
-        value: props.value,
-        validate: props.validate,
-      },
-    });
-  };
-  // 订阅错误 可以不去订阅错误
-  const subscriptionErrorTip = () => {
-    form.subscribe(() => {
-      setErrorMassage(
-        form._currentState[props.field].errorMessageList[0].message
-      );
-    }, props.field);
-  };
-
-  useEffect(() => {
-    initData();
-    subscriptionErrorTip();
-  }, []);
-
-  const conponentsMerge = useMemo(() => {
-    const conponentsObj: any = {};
-    for (const key in conponents) {
-      if (conponentsObj[conponents[key].type.name]) return;
-      conponentsObj[conponents[key].type.name] = conponents[key];
-    }
-    return {
-      ...baseConponents,
-      ...conponentsObj,
+    // 初始化
+    const initData = () => {
+      form.dispatch({
+        type: 'add',
+        [props.field]: {
+          value: props.value,
+          validate: props.validate,
+        },
+      });
     };
-  }, [conponents]);
+    // 订阅错误 可以不去订阅错误
+    const subscriptionErrorTip = () => {
+      form.subscribe(() => {
+        setErrorMassage(
+          form._currentState[props.field].errorMessageList[0].message
+        );
+      }, props.field);
+    };
 
-  const oninput = (e: { target: { value: any } }) => {
-    setValue(e.target.value);
-    form.dispatch({ type: 'set', [props.field]: e.target.value });
-  };
+    useEffect(() => {
+      initData();
+      subscriptionErrorTip();
+    }, []);
 
-  const delectItem = () => {
-    setValue('');
-    form.dispatch({ type: 'set', [props.field]: '' });
-  };
+    const conponentsMerge = useMemo(() => {
+      const conponentsObj: any = {};
+      for (const key in conponents) {
+        if (conponentsObj[conponents[key].type.name]) return;
+        conponentsObj[conponents[key].type.name] = conponents[key];
+      }
+      return {
+        ...baseConponents,
+        ...conponentsObj,
+      };
+    }, [conponents]);
 
-  return (
-    <>
-      {conponentsMerge[props.type] &&
-        CloneDemo(conponentsMerge[props.type], {
-          ...props,
-          errorMassage,
-          value,
-          onInput: oninput,
-          allowClearHandler: delectItem,
-        })}
-    </>
-  );
-};
+    const oninput = (e: { target: { value: any } }) => {
+      setValue(e.target.value);
+      form.dispatch({ type: 'set', [props.field]: e.target.value });
+    };
+
+    const delectItem = () => {
+      setValue('');
+      form.dispatch({ type: 'set', [props.field]: '' });
+    };
+
+    return (
+      <>
+        {conponentsMerge[props.type] &&
+          CloneDemo(conponentsMerge[props.type], {
+            ...props,
+            errorMassage,
+            value,
+            onInput: oninput,
+            allowClearHandler: delectItem,
+          })}
+      </>
+    );
+  }
+);
 export type rule = {
   field: string;
   value: string;
@@ -119,13 +121,14 @@ const From = (props: {
   conponents: any;
 }) => {
   const { form, rule = [], conponents } = props;
+  const mergeList = [...conponents]
   return (
     <div>
       {rule.map((item) => {
         return (
           <Field
             key={item.field}
-            conponents={conponents}
+            conponents={mergeList}
             form={form}
             {...item}
           />
