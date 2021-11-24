@@ -4,11 +4,17 @@
  * @Author: 杨海波
  * @Date: 2021-07-21 23:18:58
  * @LastEditors: 杨海波
- * @LastEditTime: 2021-11-20 11:04:32
+ * @LastEditTime: 2021-11-24 15:54:25
  * @FilePath: /create-form-controller/src/formStore/store.ts
  */
 import Schema from 'async-validator';
-import { set_action, add_action, upDateMessage_action } from './action';
+import {
+  set_action,
+  add_action,
+  upDateupMessage_action,
+  upDateupFocusStatus_action,
+  upDateupDateDisabled_action,
+} from './action';
 import reducer from './reducer';
 
 class Store {
@@ -23,16 +29,17 @@ class Store {
   private _finishFailedwatch: any = null;
   // 是否全都验证通过
   private passThrough = false;
+  public lastTimeParams = null;
   private subscribeList: Array<any> = [];
 
-  // public setInitialValues = (payload: any) => {
-  //   for (const key in payload) {
-  //     if (Object.prototype.hasOwnProperty.call(payload, key)) {
-  //       const element = payload[key];
-  //       this.dispatch({ type: 'set', [key]: element });
-  //     }
-  //   }
-  // };
+  public setInitialValues = (payload: any) => {
+    for (const key in payload) {
+      if (Object.prototype.hasOwnProperty.call(payload, key)) {
+        const element = payload[key];
+        this.dispatch({ type: 'set', [key]: element });
+      }
+    }
+  };
 
   public getState = () => {
     const currentValue: any = {};
@@ -76,12 +83,12 @@ class Store {
       .then((res) => {
         this.passThrough = false;
         this._finishFailedwatch && this._finishFailedwatch();
-        console.log('全部验证成功');
+        console.log('全部验证成功', res);
       })
       .catch(({ errors, fields }) => {
         this.passThrough = true;
         this._finishFailedwatch && this._finishFailedwatch();
-        console.log('有验证失败的');
+        console.log('有验证失败的', errors, fields);
       });
   };
   // 修改其中一个
@@ -96,7 +103,7 @@ class Store {
       .validate(currentValue)
       .then((res) => {
         this.dispatch({
-          type: 'upDateMessage',
+          type: 'upDateupMessage',
           [field]: [
             {
               field,
@@ -113,7 +120,7 @@ class Store {
       })
       .catch(({ errors, fields }) => {
         this.dispatch({
-          type: 'upDateMessage',
+          type: 'upDateupMessage',
           ...fields,
         });
         for (let i = 0; i < this.subscribeList.length; i++) {
@@ -155,15 +162,28 @@ class Store {
             this.collectionRulesStoreList[i][name]();
           }
         }
-        console.log('-------====+==++');
         this._validateAll();
         break;
       // 更新error message
-      case 'upDateMessage':
+      case 'upDateupMessage':
         this._currentState = this._reducer(
           this._currentState,
-          upDateMessage_action(action)
+          upDateupMessage_action(action)
         );
+        break;
+      // 更新focusStatus
+      case 'upDateupFocusStatus':
+        this._currentState = this._reducer(
+          this._currentState,
+          upDateupFocusStatus_action(action)
+        );
+        break;
+      case 'upDateupDisabled':
+        this._currentState = this._reducer(
+          this._currentState,
+          upDateupDateDisabled_action(action)
+        );
+        console.log(this._currentState, '-_______');
         break;
     }
   };
