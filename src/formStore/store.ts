@@ -34,8 +34,9 @@ class Store {
 
   public setInitialValues = (payload: any) => {
     for (const key in payload) {
-      if (Object.prototype.hasOwnProperty.call(payload, key)) {
+      if (Object.prototype.hasOwnProperty.call(this._currentState, key)) {
         const element = payload[key];
+        if (!element) return;
         this.dispatch({ type: 'set', [key]: element });
       }
     }
@@ -83,12 +84,12 @@ class Store {
       .then((res) => {
         this.passThrough = false;
         this._finishFailedwatch && this._finishFailedwatch();
-        console.log('全部验证成功', res);
+        console.log('全部验证成功');
       })
       .catch(({ errors, fields }) => {
         this.passThrough = true;
-        this._finishFailedwatch && this._finishFailedwatch();
         console.log('有验证失败的', errors, fields);
+        this._finishFailedwatch && this._finishFailedwatch();
       });
   };
   // 修改其中一个
