@@ -1,12 +1,3 @@
-/*
- * @Descripttion:
- * @version:
- * @Author: 杨海波
- * @Date: 2021-07-21 23:18:58
- * @LastEditors: 杨海波
- * @LastEditTime: 2021-11-24 15:54:25
- * @FilePath: /create-form-controller/src/formStore/store.ts
- */
 import Schema from 'async-validator';
 import {
   set_action,
@@ -36,8 +27,9 @@ class Store {
     for (const key in payload) {
       if (Object.prototype.hasOwnProperty.call(this._currentState, key)) {
         const element = payload[key];
-        if (!element) return;
-        this.dispatch({ type: 'set', [key]: element });
+        if (element) {
+          this.dispatch({ type: 'set', [key]: element });
+        }
       }
     }
   };

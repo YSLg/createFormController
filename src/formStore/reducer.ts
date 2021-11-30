@@ -17,6 +17,7 @@ import {
 const reducer = (state: any, { type, ...payload }: any) => {
   switch (type) {
     case SET:
+      console.log(payload, 'payload[Object.keys(payload)[0]]');
       return {
         ...state,
         [Object.keys(payload)[0]]: {
