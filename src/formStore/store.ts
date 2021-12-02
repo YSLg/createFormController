@@ -28,6 +28,7 @@ class Store {
       for (const key in payload) {
         if (Object.prototype.hasOwnProperty.call(this._currentState, key)) {
           const element = payload[key];
+          console.log(element, key);
           if (element) {
             this.dispatch({ type: 'set', [key]: element });
           }
@@ -69,7 +70,12 @@ class Store {
     const descriptor: any = {};
     const currentValue: any = {};
     Object.keys(current).forEach((item) => {
-      descriptor[item] = current[item].validate;
+      descriptor[item] = current[item].validate.map((val: any) => {
+        return {
+          ...val,
+          pattern: new RegExp(val.pattern[0]),
+        };
+      });
       currentValue[item] = current[item].value;
     });
     const validator = new Schema(descriptor);
@@ -91,7 +97,14 @@ class Store {
     const current = this._currentState[field];
     const descriptor: any = {};
     const currentValue: any = {};
-    descriptor[field] = current.validate;
+    descriptor[field] =
+      current.validate &&
+      current.validate.map((v: any) => {
+        return {
+          ...v,
+          pattern: new RegExp(v.pattern[0]),
+        };
+      });
     currentValue[field] = current.value;
     const validator = new Schema(descriptor);
     validator
