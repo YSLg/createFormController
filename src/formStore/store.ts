@@ -24,14 +24,16 @@ class Store {
   private subscribeList: Array<any> = [];
 
   public setInitialValues = (payload: any) => {
-    for (const key in payload) {
-      if (Object.prototype.hasOwnProperty.call(this._currentState, key)) {
-        const element = payload[key];
-        if (element) {
-          this.dispatch({ type: 'set', [key]: element });
+    setTimeout(() => {
+      for (const key in payload) {
+        if (Object.prototype.hasOwnProperty.call(this._currentState, key)) {
+          const element = payload[key];
+          if (element) {
+            this.dispatch({ type: 'set', [key]: element });
+          }
         }
       }
-    }
+    });
   };
 
   public getState = () => {
