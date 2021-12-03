@@ -19,7 +19,7 @@ class Store {
   private _reducer;
   private _finishFailedwatch: any = null;
   // 是否全都验证通过
-  private passThrough = false;
+  private passThrough = true;
   public lastTimeParams = null;
   private subscribeList: Array<any> = [];
 
@@ -28,7 +28,6 @@ class Store {
       for (const key in payload) {
         if (Object.prototype.hasOwnProperty.call(this._currentState, key)) {
           const element = payload[key];
-          console.log(element, key);
           if (element) {
             this.dispatch({ type: 'set', [key]: element });
           }
@@ -84,11 +83,11 @@ class Store {
       .then((res) => {
         this.passThrough = false;
         this._finishFailedwatch && this._finishFailedwatch();
-        console.log('全部验证成功');
+        console.log('成功， 。。。。。', currentValue);
       })
       .catch(({ errors, fields }) => {
+        console.log('失败， 。。。。。', errors, fields);
         this.passThrough = true;
-        console.log('有验证失败的', errors, fields);
         this._finishFailedwatch && this._finishFailedwatch();
       });
   };
@@ -170,7 +169,9 @@ class Store {
             this.collectionRulesStoreList[i][name]();
           }
         }
-        this._validateAll();
+        setTimeout(() => {
+          this._validateAll();
+        });
         break;
       // 更新error message
       case 'upDateupMessage':
@@ -191,7 +192,6 @@ class Store {
           this._currentState,
           upDateupDateDisabled_action(action)
         );
-        console.log(this._currentState, '-_______');
         break;
     }
   };
