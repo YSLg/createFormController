@@ -4,7 +4,7 @@
  * @Author: 杨海波
  * @Date: 2021-07-21 23:16:23
  * @LastEditors: 杨海波
- * @LastEditTime: 2021-11-24 15:55:49
+ * @LastEditTime: 2021-12-03 18:09:05
  * @FilePath: /create-form-controller/src/formStore/reducer.ts
  */
 import {
@@ -17,7 +17,6 @@ import {
 const reducer = (state: any, { type, ...payload }: any) => {
   switch (type) {
     case SET:
-      console.log(payload, 'payload[Object.keys(payload)[0]]');
       return {
         ...state,
         [Object.keys(payload)[0]]: {

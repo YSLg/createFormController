@@ -83,10 +83,8 @@ class Store {
       .then((res) => {
         this.passThrough = false;
         this._finishFailedwatch && this._finishFailedwatch();
-        console.log('成功， 。。。。。', currentValue);
       })
       .catch(({ errors, fields }) => {
-        console.log('失败， 。。。。。', errors, fields);
         this.passThrough = true;
         this._finishFailedwatch && this._finishFailedwatch();
       });
