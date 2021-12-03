@@ -73,7 +73,7 @@ class Store {
       descriptor[item] = current[item].validate.map((val: any) => {
         return {
           ...val,
-          pattern: new RegExp(val.pattern[0]),
+          pattern: val.pattern ? new RegExp(val.pattern[0]) : '',
         };
       });
       currentValue[item] = current[item].value;
@@ -102,7 +102,7 @@ class Store {
       current.validate.map((v: any) => {
         return {
           ...v,
-          pattern: new RegExp(v.pattern[0]),
+          pattern: v.pattern ? new RegExp(v.pattern[0]) : '',
         };
       });
     currentValue[field] = current.value;
