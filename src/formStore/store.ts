@@ -69,12 +69,14 @@ class Store {
     const descriptor: any = {};
     const currentValue: any = {};
     Object.keys(current).forEach((item) => {
-      descriptor[item] = current[item].validate.map((val: any) => {
-        return {
-          ...val,
-          pattern: val.pattern ? new RegExp(val.pattern[0]) : '',
-        };
-      });
+      if (!!current[item].validate) {
+        descriptor[item] = current[item].validate.map((val: any) => {
+          return {
+            ...val,
+            pattern: val.pattern ? new RegExp(val.pattern[0]) : '',
+          };
+        });
+      }
       currentValue[item] = current[item].value;
     });
     const validator = new Schema(descriptor);
@@ -83,8 +85,10 @@ class Store {
       .then((res) => {
         this.passThrough = false;
         this._finishFailedwatch && this._finishFailedwatch();
+        console.log('全部成功');
       })
       .catch(({ errors, fields }) => {
+        console.log('全部失败', errors, fields);
         this.passThrough = true;
         this._finishFailedwatch && this._finishFailedwatch();
       });
